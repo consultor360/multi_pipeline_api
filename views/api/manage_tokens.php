@@ -1,5 +1,4 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
-// Caminho: /public_html/modules/multi_pipeline/views/api/manage_tokens.php
 <?php init_head(); ?>
 
 <div id="wrapper">
@@ -9,6 +8,9 @@
                 <div class="panel_s">
                     <div class="panel-body">
                         <h2 class="mb-4"><?php echo _l('manage_api_tokens'); ?></h2>
+                        <button type="button" class="btn btn-primary mb-4 float-right" data-toggle="modal" data-target="#addTokenModal">
+                            <?php echo _l('add_token'); ?>
+                        </button>
                         <div class="table-responsive">
                             <table class="table table-striped table-bordered">
                                 <thead>
@@ -37,15 +39,10 @@
                                                     </a>
                                                 </td>
                                             </tr>
-                                        <?php endforeach; ?>
+                                <?php endforeach; ?>
                                     <?php else: ?>
                                         <tr>
                                             <td colspan="5" class="text-center"><?php echo _l('no_tokens_found'); ?></td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="5" class="text-center">
-                                                <a href="<?php echo admin_url('api/add_token'); ?>" class="btn btn-primary"><?php echo _l('add_token'); ?></a>
-                                            </td>
                                         </tr>
                                     <?php endif; ?>
                                 </tbody>
@@ -53,6 +50,33 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Adicionar Token -->
+<div class="modal fade" id="addTokenModal" tabindex="-1" role="dialog" aria-labelledby="addTokenModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addTokenModalLabel"><?php echo _l('add_token'); ?></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <?php echo form_open('multi_pipeline/api/add_token'); ?>
+                    <div class="form-group">
+                        <label for="name"><?php echo _l('token_name'); ?></label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="user"><?php echo _l('user'); ?></label>
+                        <input type="text" class="form-control" id="user" name="user" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><?php echo _l('add_token'); ?></button>
+                <?php echo form_close(); ?>
             </div>
         </div>
     </div>
