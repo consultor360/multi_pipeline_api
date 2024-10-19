@@ -91,14 +91,14 @@ class Api extends Admin_controller // Mudança para estender Admin_controller
             echo json_encode(['status' => 'error', 'message' => 'Acesso negado', 'code' => 403]);
             return;
         }
-
+    
         // Carregar a biblioteca de validação de formulários
         $this->load->library('form_validation');
-
+    
         // Definir regras de validação
         $this->form_validation->set_rules('name', 'Nome', 'required');
-        $this->form_validation->set_rules('user', 'Usuário', 'required');
-        
+        // Remover a validação para user_id, pois será preenchido automaticamente
+    
         // Verifica se o formulário foi enviado
         if ($this->input->post()) {
             if ($this->form_validation->run() == FALSE) {
@@ -107,17 +107,17 @@ class Api extends Admin_controller // Mudança para estender Admin_controller
                 echo json_encode(['status' => 'error', 'message' => validation_errors(), 'code' => 400]);
                 return;
             }
-
+    
             // Adicionar token
             $token_data = [
                 'name' => $this->input->post('name'),
-                'user' => $this->input->post('user'),
+                'user_id' => $this->session->userdata('user_id'), // Preencher automaticamente com o ID do usuário da sessão
                 'token' => bin2hex(random_bytes(16)), // Gera um token aleatório
             ];
-
+    
             // Chame o modelo para adicionar o token
             $this->Api_model->add_token($token_data);
-
+    
             echo json_encode(['status' => 'success', 'message' => 'Token adicionado com sucesso']);
         } else {
             // Carregar a view para adicionar token
