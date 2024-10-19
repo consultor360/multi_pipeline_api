@@ -1,41 +1,33 @@
-<?php
-// Caminho: /public_html/modules/multi_pipeline/views/api/add_token.php
-defined('BASEPATH') OR exit('No direct script access allowed');
-?>
+<?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
+<?php init_head(); ?>
 
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adicionar Token</title>
-    <link rel="stylesheet" href="<?php echo base_url('assets/css/multi_pipeline.css'); ?>">
-</head>
-<body>
-    <div class="container">
-        <h1>Adicionar Token</h1>
-        <?php if ($this->session->flashdata('success')): ?>
-            <div class="alert alert-success">
-                <?php echo $this->session->flashdata('success'); ?>
+<div id="wrapper">
+    <div class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel_s">
+                    <div class="panel-body">
+                        <h2 class="mb-4"><?php echo _l('add_api_token'); ?></h2>
+                        <?php echo form_open('api/add_token', array('class'=>'form-horizontal')); ?>
+                            <div class="form-group">
+                                <label for="name" class="col-sm-2 control-label"><?php echo _l('name'); ?></label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                </div>
+                            </div>
+                            <?php echo form_open('multi_pipeline/api/add_token'); ?>
+<div class="form-group">
+    <label for="name"><?php echo _l('token_name'); ?></label>
+    <input type="text" class="form-control" id="name" name="name" required>
+</div>
+<?php echo form_hidden('user_id', get_staff_user_id()); ?>
+<button type="submit" class="btn btn-primary"><?php echo _l('add_token'); ?></button>
+<?php echo form_close(); ?>
+                    </div>
+                </div>
             </div>
-        <?php endif; ?>
-        <?php if ($this->session->flashdata('error')): ?>
-            <div class="alert alert-danger">
-                <?php echo $this->session->flashdata('error'); ?>
-            </div>
-        <?php endif; ?>
-        
-        <form action="<?php echo site_url('multi_pipeline/api/add_token'); ?>" method="post">
-            <div class="form-group">
-                <label for="name">Nome</label>
-                <input type="text" name="name" id="name" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label for="user">Usuário</label>
-                <input type="text" name="user" id="user" class="form-control" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Adicionar Token</button>
-        </form>
+        </div>
     </div>
-</body>
-</html>
+</div>
+
+<?php init_tail(); ?>

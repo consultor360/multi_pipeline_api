@@ -27,7 +27,7 @@
                                         <?php foreach ($tokens as $token): ?>
                                             <tr>
                                                 <td><?php echo $token->id; ?></td>
-                                                <td><?php echo $token->user; ?></td>
+                                                <td><?php echo isset($token->firstname) && isset($token->lastname) ? $token->firstname . ' ' . $token->lastname : 'N/A'; ?></td> <!-- Ajuste aqui -->
                                                 <td><?php echo $token->name; ?></td>
                                                 <td><?php echo $token->token; ?></td>
                                                 <td>
@@ -39,7 +39,7 @@
                                                     </a>
                                                 </td>
                                             </tr>
-                                <?php endforeach; ?>
+                                        <?php endforeach; ?>
                                     <?php else: ?>
                                         <tr>
                                             <td colspan="5" class="text-center"><?php echo _l('no_tokens_found'); ?></td>
@@ -71,10 +71,7 @@
                         <label for="name"><?php echo _l('token_name'); ?></label>
                         <input type="text" class="form-control" id="name" name="name" required>
                     </div>
-                    <div class="form-group">
-                        <label for="user"><?php echo _l('user'); ?></label>
-                        <input type="text" class="form-control" id="user" name="user" required>
-                    </div>
+                    <?php echo form_hidden('user_id', get_staff_user_id()); ?>
                     <button type="submit" class="btn btn-primary"><?php echo _l('add_token'); ?></button>
                 <?php echo form_close(); ?>
             </div>
