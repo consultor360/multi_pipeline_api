@@ -85,43 +85,35 @@ class Api extends Admin_controller // Mudança para estender Admin_controller
 
     public function add_token()
     {
-        // Verifique se o usuário tem permissão para adicionar tokens
-        if (!$this->session->userdata('is_admin') && !staff_can('manage_api_tokens')) {
-            $this->output->set_status_header(403);
-            echo json_encode(['status' => 'error', 'message' => 'Acesso negado', 'code' => 403]);
-            return;
+        // Verificar se o usuário está logado e tem permissão
+        if (!is_admin()) {
+            access_denied('Adicionar Token API');
         }
     
-        // Carregar a biblioteca de validação de formulários
-        $this->load->library('form_validation');
+        // Capturar os dados do formulário
+        $data = $this->input->post();
     
-        // Definir regras de validação
-        $this->form_validation->set_rules('name', 'Nome', 'required');
-        // Remover a validação para user_id, pois será preenchido automaticamente
+        // Adicionar o user_id do usuário atual
+        $data['user_id'] = get_staff_user_id();
     
-        // Verifica se o formulário foi enviado
-        if ($this->input->post()) {
-            if ($this->form_validation->run() == FALSE) {
-                // Se a validação falhar, retornar erros
-                $this->output->set_status_header(400);
-                echo json_encode(['status' => 'error', 'message' => validation_errors(), 'code' => 400]);
-                return;
+        // Validação dos dados
+        $this->form_validation->set_rules('name', 'Nome do Token', 'required|trim');
+    
+        if ($this->form_validation->run() == FALSE) {
+            // Se a validação falhar, redirecionar de volta com erro
+            set_alert('danger', _l('form_validation_error'));
+            redirect(admin_url('multi_pipeline/api/manage_tokens'));
+        } else {
+            // Se a validação passar, adicionar o token
+            $token_id = $this->Api_model->add_token($data);
+    
+            if ($token_id) {
+                set_alert('success', _l('token_added_successfully'));
+            } else {
+                set_alert('danger', _l('error_adding_token'));
             }
     
-            // Adicionar token
-            $token_data = [
-                'name' => $this->input->post('name'),
-                'user_id' => $this->session->userdata('user_id'), // Preencher automaticamente com o ID do usuário da sessão
-                'token' => bin2hex(random_bytes(16)), // Gera um token aleatório
-            ];
-    
-            // Chame o modelo para adicionar o token
-            $this->Api_model->add_token($token_data);
-    
-            echo json_encode(['status' => 'success', 'message' => 'Token adicionado com sucesso']);
-        } else {
-            // Carregar a view para adicionar token
-            $this->load->view('api/add_token');
+            redirect(admin_url('multi_pipeline/api/manage_tokens'));
         }
     }
 
