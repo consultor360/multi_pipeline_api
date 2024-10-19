@@ -2,7 +2,7 @@
 // Caminho: /public_html/modules/multi_pipeline/controllers/Api.php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Api extends CI_Controller
+class Api extends Admin_controller // Mudança para estender Admin_controller
 {
     public function __construct()
     {
@@ -10,6 +10,7 @@ class Api extends CI_Controller
         $this->load->model('Api_model');
         $this->load->model('Lead_model');
         $this->load->library('form_validation');
+        $this->load->helper('admin'); // Carregar o helper admin
     }
 
     public function add_lead()
@@ -75,10 +76,73 @@ class Api extends CI_Controller
 
         $lead_id = $this->Lead_model->add($lead_data);
         if ($lead_id) {
-            echo json_encode(['status' => 'success', 'message' => 'Lead adicionado com sucesso', 'lead_id' => $lead_id]);
+            echo json_encode(['status' => 'success', 'message' => ' Lead adicionado com sucesso', 'lead_id' => $lead_id]);
         } else {
             $this->output->set_status_header( 500);
             echo json_encode(['status' => 'error', 'message' => 'Erro ao adicionar lead', 'code' => 500]);
         }
+    }
+
+    public function add_token()
+    {
+        // Verifique se o usuário tem permissão para adicionar tokens
+        if (!$this->session->userdata('is_admin') && !staff_can('manage_api_tokens')) {
+            $this->output->set_status_header(403);
+            echo json_encode(['status' => 'error', 'message' => 'Acesso negado', 'code' => 403]);
+            return;
+        }
+
+        // Carregar a biblioteca de validação de formulários
+        $this->load->library('form_validation');
+
+        // Definir regras de validação
+        $this->form_validation->set_rules('name', 'Nome', 'required');
+        $this->form_validation->set_rules('user', 'Usuário', 'required');
+        
+        // Verifica se o formulário foi enviado
+        if ($this->input->post()) {
+            if ($this->form_validation->run() == FALSE) {
+                // Se a validação falhar, retornar erros
+                $this->output->set_status_header(400);
+                echo json_encode(['status' => 'error', 'message' => validation_errors(), 'code' => 400]);
+                return;
+            }
+
+            // Adicionar token
+            $token_data = [
+                'name' => $this->input->post('name'),
+                'user' => $this->input->post('user'),
+                'token' => bin2hex(random_bytes(16)), // Gera um token aleatório
+            ];
+
+            // Chame o modelo para adicionar o token
+            $this->Api_model->add_token($token_data);
+
+            echo json_encode(['status' => 'success', 'message' => 'Token adicionado com sucesso']);
+        } else {
+            // Carregar a view para adicionar token
+            $this->load->view('api/add_token');
+        }
+    }
+
+    public function test_add_token()
+    {
+        $token_data = [
+            'name' => 'Test Token',
+            'user' => 1, // ID do usuário, por exemplo
+            'token' => bin2hex(random_bytes(16)), // Gera um token aleatório
+        ];
+
+        $result = $this->Api_model->add_token($token_data);
+        if ($result) {
+            echo "Token adicionado com sucesso! ID: " . $result;
+        } else {
+            echo "Erro ao adicionar token.";
+        }
+    }
+
+    public function manage_tokens() {
+        $data['tokens'] = $this->Api_model->get_tokens();
+        $this->load->view('manage_tokens', $data);
     }
 }
