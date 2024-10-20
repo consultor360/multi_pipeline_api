@@ -83,12 +83,7 @@ class Api extends CI_Controller // Mudança para estender Admin_controller
     }
 
     public function add_token()
-    {
-        // Verificar se o usuário está logado e tem permissão
-        if (!is_admin()) {
-            access_denied('Adicionar Token API');
-        }
-    
+    {    
         // Capturar os dados do formulário
         $data = $this->input->post();
     
