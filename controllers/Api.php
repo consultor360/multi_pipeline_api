@@ -2,7 +2,7 @@
 // Caminho: /public_html/modules/multi_pipeline/controllers/Api.php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Api extends Admin_controller // Mudança para estender Admin_controller
+class Api extends CI_Controller // Mudança para estender Admin_controller
 {
     public function __construct()
     {
@@ -10,7 +10,6 @@ class Api extends Admin_controller // Mudança para estender Admin_controller
         $this->load->model('Api_model');
         $this->load->model('Lead_model');
         $this->load->library('form_validation');
-        $this->load->helper('admin'); // Carregar o helper admin
     }
 
     public function add_lead()
