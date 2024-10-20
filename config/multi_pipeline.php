@@ -27,10 +27,13 @@ $config['multi_pipeline_enable_export'] = true;
 $route['admin/multi_pipeline/view_pipeline'] = 'Pipelines/view_pipeline';
 $route['admin/multi_pipeline'] = 'multi_pipeline/multi_pipeline/index';
 $route['admin/multi_pipeline/(:any)'] = 'multi_pipeline/multi_pipeline/$1';
+$route['admin/api/add_token'] = 'multi_pipeline/api/add_token';
+$autoload['model'] = array('Api_model', 'Lead_model');
 // config/multi_pipeline.php
 $config['api'] = [
     'enabled' => TRUE,
     'token_expiration' => 3600, // 1 hora
 ];
+$route['multi_pipeline/api/add_lead'] = 'multi_pipeline/api/add_lead';
 
 // End of file multi_pipeline.php
