@@ -187,4 +187,77 @@ class Lead_model extends App_Model
             return [];
         }
     }
+
+    public function add_lead_api($data)
+{
+    // Validação dos campos obrigatórios
+    $required_fields = ['name', 'email', 'pipeline_id', 'stage_id', 'status', 'source'];
+    foreach ($required_fields as $field) {
+        if (!isset($data[$field]) || empty($data[$field])) {
+            return [
+                'success' => false,
+                'message' => "O campo '{$field}' é obrigatório.",
+                'code' => 400
+            ];
+        }
+    }
+
+    // Verificar se o lead já existe
+    $existing_lead = $this->db->get_where('tblleads', ['email' => $data['email']])->row();
+    if ($existing_lead) {
+        return [
+            'success' => false,
+            'message' => 'Um lead com este email já existe.',
+            'code' => 409
+        ];
+    }
+
+    // Preparar os dados para inserção
+    $insert_data = [
+        'name' => $data['name'],
+        'email' => $data['email'],
+        'pipeline_id' => $data['pipeline_id'],
+        'stage_id' => $data['stage_id'],
+        'status' => $data['status'],
+        'source' => $data['source'],
+        'assigned' => isset($data['assigned']) ? $data['assigned'] : null,
+        'title' => isset($data['title']) ? $data['title'] : null,
+        'company' => isset($data['company']) ? $data['company'] : null,
+        'description' => isset($data['description']) ? $data['description'] : null,
+        'country' => isset($data['country']) ? $data['country'] : null,
+        'zip' => isset($data['zip']) ? $data['zip'] : null,
+        'city' => isset($data['city']) ? $data['city'] : null,
+        'state' => isset($data['state']) ? $data['state'] : null,
+        'address' => isset($data['address']) ? $data['address'] : null,
+        'website' => isset($data['website']) ? $data['website'] : null,
+        'phonenumber' => isset($data['phonenumber']) ? $data['phonenumber'] : null,
+        'is_public' => isset($data['is_public']) ? $data['is_public'] : 1,
+        'lead_value' => isset($data['lead_value']) ? $data['lead_value'] : null,
+        'dateadded' => date('Y-m-d H:i:s')
+    ];
+
+    // Inserir os dados na tabela tblleads
+    $this->db->trans_start();
+    $this->db->insert('tblleads', $insert_data);
+    $insert_id = $this->db->insert_id();
+    $this->db->trans_complete();
+
+    if ($this->db->trans_status() === FALSE) {
+        // Erro na transação
+        log_message('error', 'Falha ao inserir lead via API: ' . $this->db->error()['message']);
+        return [
+            'success' => false,
+            'message' => 'Erro interno ao adicionar lead.',
+            'code' => 500
+        ];
+    }
+
+    // Lead adicionado com sucesso
+    return [
+        'success' => true,
+        'message' => 'Lead adicionado com sucesso.',
+        'lead_id' => $insert_id,
+        'code' => 201
+    ];
+}
 }
