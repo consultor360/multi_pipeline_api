@@ -32,7 +32,6 @@ $autoload['model'] = array('Api_model', 'Lead_model');
 // config/multi_pipeline.php
 $config['api'] = [
     'enabled' => TRUE,
-    'token_expiration' => 3600, // 1 hora
 ];
 $route['multi_pipeline/api/add_lead'] = 'multi_pipeline/api/add_lead';
 
